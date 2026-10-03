@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html, body { background-color: #f8fafc; }
+input, select, textarea { @apply border border-slate-300 rounded px-2 py-1 text-sm; }
+table.data { @apply w-full text-sm border-collapse; }
+table.data th, table.data td { @apply border border-slate-300 px-2 py-1; }
+table.data th { @apply bg-slate-100; }
+.btn { @apply inline-block bg-slate-800 text-white text-sm px-3 py-1.5 rounded hover:bg-slate-700 cursor-pointer; }
+.btn-danger { @apply inline-block bg-red-700 text-white text-sm px-3 py-1.5 rounded hover:bg-red-600 cursor-pointer; }
+.btn-sm { @apply text-xs px-2 py-1; }
+.card { @apply bg-white border border-slate-200 rounded p-4 shadow-sm; }
+.h2 { @apply text-xl font-bold mb-3; }
+.h3 { @apply text-base font-semibold mb-2; }
+.err { @apply text-red-700 text-sm; }
+.ok { @apply text-green-700 text-sm; }

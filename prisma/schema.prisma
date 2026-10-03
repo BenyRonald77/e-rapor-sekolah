@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String // admin | walikelas | guru
+  waliKelas    Kelas[]  @relation("WaliKelas")
+  validasi     Validasi[]
+}
+
+model Kelas {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  waliKelasId Int?
+  waliKelas   User?      @relation("WaliKelas", fields: [waliKelasId], references: [id], onDelete: SetNull)
+  siswa       Siswa[]
+  mapel       Mapel[]
+  validasi    Validasi[]
+  printJobs   PrintJob[]
+}
+
+model Siswa {
+  id      Int     @id @default(autoincrement())
+  nis     String  @unique
+  name    String
+  kelasId Int
+  kelas   Kelas   @relation(fields: [kelasId], references: [id], onDelete: Cascade)
+  nilai   Nilai[]
+}
+
+model Mapel {
+  id      Int        @id @default(autoincrement())
+  name    String
+  kkm     Int
+  kelasId Int?
+  kelas   Kelas?     @relation(fields: [kelasId], references: [id], onDelete: SetNull)
+  komponen Komponen[]
+}
+
+model Komponen {
+  id      Int     @id @default(autoincrement())
+  mapelId Int
+  mapel   Mapel   @relation(fields: [mapelId], references: [id], onDelete: Cascade)
+  name    String
+  bobot   Int
+  nilai   Nilai[]
+
+  @@unique([mapelId, name])
+}
+
+model Nilai {
+  id          Int      @id @default(autoincrement())
+  siswaId     Int
+  siswa       Siswa    @relation(fields: [siswaId], references: [id], onDelete: Cascade)
+  komponenId  Int
+  komponen    Komponen @relation(fields: [komponenId], references: [id], onDelete: Cascade)
+  nilai       Int
+
+  @@unique([siswaId, komponenId])
+}
+
+model Validasi {
+  id           Int       @id @default(autoincrement())
+  kelasId      Int
+  kelas        Kelas     @relation(fields: [kelasId], references: [id], onDelete: Cascade)
+  semester     String
+  tahunAjaran  String
+  isLocked     Boolean   @default(false)
+  validatedBy  Int?
+  validator    User?     @relation(fields: [validatedBy], references: [id], onDelete: SetNull)
+  validatedAt  DateTime?
+
+  @@unique([kelasId, semester, tahunAjaran])
+}
+
+model PrintJob {
+  id          Int      @id @default(autoincrement())
+  kelasId     Int
+  kelas       Kelas    @relation(fields: [kelasId], references: [id], onDelete: Cascade)
+  semester    String
+  tahunAjaran String
+  status      String   @default("queued") // queued | processing | done | failed
+  resultPath  String?
+  log         String?
+  createdAt   DateTime @default(now())
+}
